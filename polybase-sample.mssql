@@ -21,30 +21,14 @@ WITH
 	FORMAT_OPTIONS
 	(
 		FIELD_TERMINATOR = ','
-		--インプットファイルの3行目から読み込む
-		, First_Row = 3
+		--インプットファイルの何行目から読むこむか指定する、指定がない場合は1行目から読み込む
+		--, First_Row = 2
     , DATE_FORMAT = 'yyyy-MM-dd HH:mm:ss'
     )
 );
 
 CREATE EXTERNAL TABLE <External Table Object Name> (
-	[VendorID] [int],
-	[tpep_pickup_datetime] [datetime2],
-	[tpep_dropoff_datetime] [datetime2],
-	[passenger_count] [int],
-	[trip_distance] [float],
-	[RatecodeID] [int],
-	[store_and_fwd_flag] [char](1),
-	[PULocationID] [int],
-	[DOLocationID] [int],
-	[payment_type] [int],
-	[fare_amount] [float],
-	[extra] [float],
-	[mta_tax] [float],
-	[tip_amount] [float],
-	[tolls_amount] [float],
-	[improvement_surcharge] [float],
-	[total_amount] [float]
+	<CSV のカラムに合わせて記述>
 )
 WITH
 (
