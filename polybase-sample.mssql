@@ -1,0 +1,70 @@
+CREATE MASTER KEY;
+
+CREATE DATABASE SCOPED CREDENTIAL <Credential Object Name>
+WITH
+	IDENTITY = '<ID>',
+	SECRET = '<Storage Account Key>'
+;
+
+CREATE EXTERNAL DATA SOURCE <Data Source Object Name>
+WITH (
+    TYPE = HADOOP,
+	-- adbfss を使用
+    LOCATION='abfss://<File System>@<Storage Account Key>.dfs.core.windows.net',
+    CREDENTIAL = <Credential Object Name>
+);
+
+CREATE EXTERNAL FILE FORMAT <File Format Object Name>
+WITH
+(
+	FORMAT_TYPE = DELIMITEDTEXT,
+	FORMAT_OPTIONS
+	(
+		FIELD_TERMINATOR = ','
+		--インプットファイルの3行目から読み込む
+		, First_Row = 3
+    , DATE_FORMAT = 'yyyy-MM-dd HH:mm:ss'
+    )
+);
+
+CREATE EXTERNAL TABLE <External Table Object Name> (
+	[VendorID] [int],
+	[tpep_pickup_datetime] [datetime2],
+	[tpep_dropoff_datetime] [datetime2],
+	[passenger_count] [int],
+	[trip_distance] [float],
+	[RatecodeID] [int],
+	[store_and_fwd_flag] [char](1),
+	[PULocationID] [int],
+	[DOLocationID] [int],
+	[payment_type] [int],
+	[fare_amount] [float],
+	[extra] [float],
+	[mta_tax] [float],
+	[tip_amount] [float],
+	[tolls_amount] [float],
+	[improvement_surcharge] [float],
+	[total_amount] [float]
+)
+WITH
+(
+    --ディレクトリ指定可能
+	--LOCATION='/<path>/',
+	LOCATION='/<path>/<filename>',
+	DATA_SOURCE = <Data Source Object Name>,
+	FILE_FORMAT = <File Format Object Name>,
+	REJECT_TYPE = VALUE,
+	REJECT_VALUE = 0
+)
+;
+
+--SQL DW にデータをロード
+CREATE TABLE <Table Object Name> 
+WITH
+(
+	DISTRIBUTION = ROUND_ROBIN,
+	CLUSTERED COLUMNSTORE INDEX
+)
+AS
+SELECT * FROM <External Table Object Name>
+;
